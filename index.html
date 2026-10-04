@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PH102 Exam 1 Quiz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered game column. Question card on top, 2x2 answer grid below, stacks to one column on phones. */
+:root{
+  --bg:#eef1f8; --card:#ffffff; --fg:#161b2e; --muted:#5b6380; --line:#d5daea; --accent:#3142c4;
+  --a:#b3261e; --b:#1f5fbf; --c:#946200; --d:#1d7a46; --good:#1d7a46; --bad:#b3261e;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --body:"Figtree",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10142a; --card:#1a2040; --fg:#eef0fa; --muted:#a3abc9; --line:#2e3660; --accent:#93a0ff;
+  --a:#c4443b; --b:#3b78d6; --c:#a87510; --d:#2c9159; --good:#5fd093; --bad:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10142a; --card:#1a2040; --fg:#eef0fa; --muted:#a3abc9; --line:#2e3660; --accent:#93a0ff;
+  --a:#c4443b; --b:#3b78d6; --c:#a87510; --d:#2c9159; --good:#5fd093; --bad:#ff8a80; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45;padding-inline:16px;padding-block:24px}
+main{max-width:760px;margin:0 auto}
+section{display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,6vw,2.8rem);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:0}
+p{margin:0}
+.muted{color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.btn{font:700 1rem var(--body);background:var(--accent);color:var(--bg);border:0;border-radius:10px;padding:14px 20px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn:focus-visible,.ans:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+input,select{font:600 1rem var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:13px 14px;min-width:0}
+input{flex:1 1 180px}
+label{font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hud{display:flex;justify-content:space-between;gap:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:100%}
+#q{font-family:var(--display);font-weight:600;font-size:clamp(1.2rem,4vw,1.6rem);line-height:1.2;text-wrap:balance}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.ans{font:600 1rem var(--body);color:#fff;border:0;border-radius:12px;padding:16px;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:flex-start;min-width:0}
+.ans b{font-family:var(--display);font-size:1.1rem}
+.ans:nth-child(1){background:var(--a)}.ans:nth-child(2){background:var(--b)}.ans:nth-child(3){background:var(--c)}.ans:nth-child(4){background:var(--d)}
+.ans[disabled]{cursor:default;opacity:.35}
+.ans.right{opacity:1;outline:4px solid var(--good);outline-offset:2px}
+.ans.picked{opacity:1}
+#fb{font-weight:700}
+#fb.ok{color:var(--good)}#fb.no{color:var(--bad)}
+.big{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+ul,ol{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:10px}
+.board li{font-weight:600}
+.board li div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.board li.you{color:var(--accent)}
+.qr{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.qr .code{background:#fff;padding:10px;border-radius:10px;line-height:0}
+.qr p{flex:1 1 200px;min-width:0}
+html{color-scheme:light dark}body{margin:0}[hidden]{display:none!important}
+textarea{font:400 .9rem var(--body);color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;width:100%;resize:vertical}
+</style>
+</head>
+<body>
+<main>
+  <section id="start">
+    <div class="panel">
+      <p class="muted">Practical Ethics, Prof. Ancell</p>
+      <h1>PH102 Exam 1 Quiz</h1>
+      <p>60 multiple choice questions built from the study guide and class slides, including harder ones that make you apply the ideas. You get 45 seconds each, and faster answers score more.</p>
+      <div class="row"><button class="btn" id="go">Play solo</button></div>
+    </div>
+    <div class="panel">
+      <h2>Play with friends</h2>
+      <p class="muted" id="mpStatus">Checking for a live game…</p>
+      <div id="mpControls" hidden style="display:flex;flex-direction:column;gap:16px">
+        <div class="row"><label for="name">Your name</label><input id="name" maxlength="20" autocomplete="off" placeholder="Nickname"></div>
+        <div class="row" id="hostRow">
+          <label for="len">Questions</label>
+          <select id="len"><option value="15">15</option><option value="30" selected>30, like the exam</option><option value="60">All 60</option></select>
+          <button class="btn" id="host">Host a game</button>
+        </div>
+        <div class="row"><button class="btn" id="join" hidden>Join game</button></div>
+        <div class="qr"><div class="code" id="qr1"></div><p class="muted">Scan to open the quiz on a phone, then type a name and join.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="lobby" hidden>
+    <div class="panel">
+      <h1>Lobby</h1>
+      <p class="muted" id="lobbyNote"></p>
+      <ol class="board" id="lobbyList"></ol>
+      <div class="qr"><div class="code" id="qr2"></div><p class="muted">Scan to open the quiz on a phone, then type a name and join.</p></div>
+      <div class="row"><button class="btn" id="startGame" hidden>Start game</button><button class="btn ghost" id="leave1">Leave</button></div>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="panel">
+      <div class="hud"><span id="count"></span><span id="mid"></span><span id="score"></span></div>
+      <div class="bar"><i id="time"></i></div>
+      <p id="q"></p>
+    </div>
+    <div class="grid" id="answers"></div>
+    <div class="panel" id="after" hidden>
+      <p id="fb"></p><p id="why"></p>
+      <ol class="board" id="board" hidden></ol>
+      <p class="muted" id="waitHost" hidden>Waiting for the host to continue.</p>
+      <div class="row"><button class="btn" id="next">Next question</button></div>
+    </div>
+  </section>
+
+  <section id="end" hidden>
+    <div class="panel" id="soloEnd">
+      <p class="muted">Final score</p>
+      <p class="big" id="final"></p>
+      <p id="summary"></p>
+      <div class="row"><button class="btn" id="again">Play all again</button><button class="btn ghost" id="redo">Retry only the ones I missed</button><button class="btn ghost" id="home">Back to start</button></div>
+      <div id="missedWrap" hidden><p style="font-weight:700;margin-bottom:12px">Review these</p><ul id="missed"></ul></div>
+    </div>
+    <div class="panel" id="multiEnd" hidden>
+      <h1>Final standings</h1>
+      <ol class="board" id="finalBoard"></ol>
+      <div id="resWrap" hidden style="display:flex;flex-direction:column;gap:12px"><label for="res">Results (copy these and paste them to Claude to go over what everyone missed)</label><textarea id="res" readonly rows="7"></textarea><div class="row"><button class="btn ghost" id="copyRes">Copy results</button></div></div>
+      <div class="row"><button class="btn" id="rehost" hidden>Host another game</button><button class="btn ghost" id="leave2">Leave</button></div>
+    </div>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// [question, correct, wrong, wrong, wrong, explanation]
+const BANK=[
+["Consequentialism says whether an action is right or wrong depends on…","Only its consequences","Whether it breaks a moral rule","What the person doing it believes","What the culture approves of","Consequentialism looks only at results. Rules are deontology."],
+["Deontology says an action is wrong if it…","Violates a moral rule, even if breaking the rule brings good results","Produces less pleasure than another option","Is disapproved of by the majority","Cannot be proven to be right","Deontology is about moral rules, not outcomes."],
+["Ethical hedonism is the view that…","Pleasure is the only intrinsic good and pain is the only intrinsic bad","You should maximize your own pleasure","Actions are right if they follow moral rules","There are many intrinsic goods","Hedonism is a theory of what is good. It says nothing about actions until you add consequentialism."],
+["Which of these is the best example of an extrinsic good?","Money","Happiness","Pleasure","A good will","Money is good only as a means to other good things."],
+["Value monism is the view that…","There is one ultimate intrinsic value","There are many intrinsic values","Nothing has value","Value depends on the culture","Monism means one. Ethical hedonism is the most famous monistic theory."],
+["Egoistic hedonism says you should…","Do whatever maximizes your own pleasure","Do whatever maximizes overall pleasure in the world","Follow rules that could be universal laws","Treat everyone's pleasure equally","Egoistic is about you. Utilitarian hedonism is about everyone."],
+["Which three ideas combine to form utilitarianism?","Consequentialism, hedonism, impartiality","Consequentialism, deontology, hedonism","Hedonism, egoism, impartiality","Good will, duty, impartiality","Results matter, pleasure is the good, and everyone counts equally."],
+["Action A gives +10 hedons to one person. Action B gives +1 hedon each to five people. A utilitarian picks…","Action A, because the total is higher","Action B, because it helps the majority","Either one, they are equal","Neither, both use people as a means","10 total beats 5 total. Utilitarianism maximizes the total, not the number of people helped."],
+["Most people would not plug into the Experience Machine. What does that suggest?","Pleasure is not the only intrinsic good","Consequences do not matter","Morality is subjective","Utilitarianism is too demanding","If pleasure were all that mattered we would plug in. So we must value something else too, like reality."],
+["Ethical subjectivism says right and wrong depend on…","What the person doing the action believes","What the culture believes","The consequences","Nothing, because there is no moral truth","Subjectivism is about the individual. Relativism is about the culture."],
+["Cultural relativism says right and wrong depend on…","The culture","What each individual believes","What can be proven","Moral rules that apply to all rational beings","The culture decides, not the individual."],
+["Nihilism is the view that…","Nothing is truly right or wrong","We cannot prove what is right or wrong","People disagree about right and wrong","Our backgrounds shape our moral beliefs","Nihilism is about what is actually true. The other three are about beliefs and proof."],
+["We cannot prove whether Shakespeare ate an apple on July 3, 1592. What does this example show?","Not being able to prove something does not mean there is no truth about it","Nothing is truly right or wrong","Morality depends on the culture","Moral disagreement proves there is no moral truth","Unprovability does not lead to nihilism. What we can prove is different from what is true."],
+["Which is an objection to cultural relativism?","Cultures could change but there would be no real moral progress","It is too demanding","It is too impartial","Its maxims can be manipulated","Under relativism the dominant view is always right, so ending slavery would just be a change, not progress."],
+["Which is an objection to ethical subjectivism?","People could never be wrong about what is right for them to do","It ignores consequences","It rules out playing pickleball","It makes opinion polls decide morality","If Hitler believed his actions were right, subjectivism says they were. The poll one is an objection to relativism."],
+["Which of these is a normative question?","Is it ethically okay to offer extra credit?","What percentage of professors offer extra credit?","Do students like extra credit?","Does Bentley policy allow extra credit?","Normative questions ask what we should do. The other three ask how things actually are."],
+["In an argument, the premises are…","The reasons given to support the conclusion","The claim being argued for","Objections to the argument","The initial judgment","Premises support. The conclusion is the claim they support."],
+["For Kant, a good will is…","A commitment to do what is right just because it is right","A desire to produce the most happiness","Doing what your culture approves of","Being kind to people you care about","It is the only intrinsically good thing for Kant."],
+["A store owner is honest only because honesty builds customer loyalty and profits. Kant would say he is acting…","In accordance with duty","From duty","On a categorical imperative","Merely as a means","He does the right thing but for the wrong reason. Only acting from duty is morally good."],
+["A categorical imperative is one that…","Applies regardless of what you want","Applies only if you want something","Applies only in your culture","Maximizes pleasure","Hypothetical is 'if you want X, do Y'. Categorical is 'do Y, no matter what'."],
+["Which is a hypothetical imperative?","If you want to do well on the exam, you should study","Do not lie","Never treat people merely as a means","Always keep your promises","It only applies if you want the thing. Stop caring about the grade and it no longer applies."],
+["What are the three parts of a maxim?","Circumstance, action, purpose","Premise, conclusion, objection","Vulnerability, advantage, unfair terms","Intensity, duration, certainty","When I am in situation C, I will do action A in order to accomplish purpose P."],
+["The Formula of Universal Law basically asks…","What if everyone did this? Would my action still work?","Am I using someone merely as a means?","Which action produces the most pleasure?","What does my culture say?","Formulate the maxim, make it universal, then ask if the action would still be effective."],
+["Which action violates the Formula of Humanity?","Selling your car without mentioning a serious defect","Ordering a coffee from a barista","Asking a friend for a ride and making clear they can say no","Paying a tutor to help you study","Hiding the defect deceives the buyer and bypasses their ability to choose."],
+["Using someone merely as a means is…","Involving them while bypassing or subordinating their rational agency","Involving them in pursuing one of your goals","Paying them less than you could","Asking them for a favor","Using people as a means is fine. Merely as a means involves deception, coercion, manipulation, or exploitation."],
+["The Tuesday morning pickleball example shows that Kant's test…","Rules out some actions that are actually permissible","Can be manipulated by rewording the maxim","Is too rigid about lying","Ignores good motivations like love","If everyone played Tuesday morning the courts would be full, so it fails the test even though nothing is wrong with it."],
+["'On this particular Thursday, in this exact situation, I will lie' passes the test. Which objection is this?","The test can be manipulated by altering the maxim","The test rules out permissible actions","Duty is not the only good motivation","Utilitarianism is too impartial","Describe the action narrowly enough and almost anything passes."],
+["Visiting a friend in the hospital only because the moral rules say so seems off. Which objection to Kant is this?","Acting out of respect for the rules is not the only good motivation","The Categorical Imperative is too rigid","The test can be manipulated","It rules out permissible actions","Going because you care about your friend seems like a good motivation too."],
+["A hospital profits from people being sick. Why is that not automatically exploitation?","The terms can be fair, so it is not getting more than it is entitled to","Because it helps people","Because patients consent","Because hospitals follow the law","Exploitation needs unfair terms. Helping and consent are not enough to rule it out, as the tugboat case shows."],
+["The non worseness argument concludes that sweatshops are…","Morally permissible even if they are exploitative","Morally impermissible because they are exploitative","Permissible only if wages are fair","Wrong because they fail the Formula of Humanity","Sweatshop jobs benefit workers compared to their other options, and workers would be worse off without them."],
+["The exploitation argument against sweatshops relies on which approach?","Deontology","Consequentialism","Ethical hedonism","Cultural relativism","It says exploitation is impermissible no matter how the results turn out. That is a rule, so it is deontological."],
+["Applied to sweatshops, the Formula of Universal Law suggests they are…","Okay, because the maxim can be universalized without a problem","Wrong, because workers are used merely as a means","Wrong, because they reduce overall pleasure","Okay, because workers consent","If everyone hired low wage workers abroad to cut costs, it would still work. The Formula of Humanity may disagree."],
+["Saying utilitarianism is too impartial means…","It gives your family and friends no more weight than strangers","It asks you to sacrifice too much","It ignores consequences","It only counts human pleasure","Everyone's pleasure counts equally, which clashes with the idea that we owe more to people close to us."],
+["Saying utilitarianism is too demanding means…","It requires constant sacrifice whenever that would produce more overall pleasure","It treats strangers the same as family","It has no exceptions to its rules","It makes pleasure the only good","You would always have to do whatever maximizes overall pleasure, even at great cost to yourself."],
+["Sam believes cheating on a test is fine. According to ethical subjectivism, is it wrong for Sam to cheat?", "No, because Sam believes it is okay", "Yes, because cheating breaks a moral rule", "Yes, because the culture disapproves", "It depends on the consequences", "Subjectivism says right and wrong depend on what the person doing the action believes. That result is exactly why people object to it."],
+["'People disagree about whether eating meat is wrong, so there is no truth about it.' What is wrong with this argument?", "Disagreement does not mean there is no truth, since people also disagreed about whether the earth is flat", "Nothing, the conclusion follows", "People do not actually disagree about eating meat", "It confuses premises with conclusions", "The premise 'if people disagree, there is no truth' is false. The flat earth example shows it."],
+["Which of these is a claim about what is actually true, not about what people believe or can prove?", "Nihilism", "Moral disagreement", "Unprovability", "Social influence", "Disagreement, unprovability, and social influence are about beliefs and proof. Nihilism says there are no moral truths at all."],
+["According to cultural relativism, should we be tolerant of other cultures?", "Only if our own culture says we should be", "Yes, always", "No, never", "Only if we can prove tolerance is right", "Relativism does not make tolerance a universal rule. Tolerating other beliefs is different from saying they are true."],
+["'Our backgrounds shape what we believe is right and wrong.' Is this the same as cultural relativism?", "No. It is about what people believe, not about what is actually right", "Yes, they are the same claim", "No. It is the same as nihilism", "Yes, because culture decides belief", "That is social influence. Relativism makes the stronger claim that the culture determines what is actually right."],
+["Someone says 'I disagree' about an argument's conclusion. Why is that not yet an objection?", "It does not say which part of the argument is the problem or why", "Because conclusions cannot be wrong", "Because objections must be normative", "Because only premises matter", "A real objection shows a premise is false or doubtful, that the premises do not support the conclusion, or that the conclusion is too broad."],
+["The extra credit argument was revised to conclude 'professors should not offer those types of extra credit.' What problem did that fix?", "The original conclusion was too broad", "A premise was false", "The argument had no premises", "It was descriptive instead of normative", "Only some extra credit is inaccessible, so the premises only support a conclusion about those types."],
+["Your roommate's cooking is terrible and they ask if you liked it. What would a consequentialist say about lying?", "Lying is wrong only if its consequences are worse than telling the truth", "Lying is always wrong because it breaks a moral rule", "Lying is fine because your roommate believes the food is good", "Lying is wrong because it cannot be universalized", "Consequentialism judges the lie only by its results. The rule answer is deontology and the universalizing answer is Kant."],
+["In Bentham's list for evaluating pleasures, what does 'pure' mean?", "The pleasure will not lead to pain later", "The pleasure is intense", "The pleasure comes soon", "The pleasure is a higher pleasure of the mind", "Pure asks whether it leads to pain in the future. Fruitful asks whether it leads to more pleasure."],
+["Mill says higher pleasures of the mind beat lower bodily pleasures. Why is that a problem for hedonism?", "If pleasure is the only intrinsic value, it is unclear what makes some pleasures higher", "Because lower pleasures are more intense", "Because Mill rejected consequentialism", "Because higher pleasures cannot be measured in hedons", "Saying some pleasures count more suggests something besides pleasure matters, which is what hedonism denies."],
+["How does a utilitarian respond to the charge that it tells us to kill one to save five in cases where that seems wrong?", "Count all the consequences, not just the immediate ones, and killing the one turns out worse", "Killing is always against the moral rules", "The five have a duty to die", "The one person did not consent", "The reply stays inside consequentialism. It says the long run results of that kind of killing are worse."],
+["Whose pleasure and pain do most utilitarians count?", "All affected individuals, including animals", "Only the person acting", "Only human beings", "Only the majority", "Impartiality counts everyone affected equally, and most utilitarians extend that to animals."],
+["Which of these is NOT one of the objections to utilitarianism from class?", "Its test can be manipulated by rewording the maxim", "Pleasure is not the only intrinsic good", "It is too impartial", "It is too demanding", "Maxims belong to Kant. The fourth utilitarianism objection was that it sometimes tells us to do things that are morally wrong."],
+["How do the four theories relate?", "Utilitarianism is one version of consequentialism, and Kant's ethics is one version of deontology", "Utilitarianism and Kant's ethics are both versions of consequentialism", "Consequentialism is one version of utilitarianism", "Deontology is one version of Kant's ethics", "Consequentialism and deontology are the broad families. Utilitarianism and Kant's ethics are specific versions."],
+["Consequentialism plus hedonism says an action is right if it leads to pleasure. What question does that leave open, and what answers it for utilitarians?", "Pleasure for who? Impartiality answers it", "Which rules apply? The categorical imperative answers it", "What is pleasure? Value pluralism answers it", "Is there moral truth? Nihilism answers it", "Egoists answer 'mine.' Utilitarians add impartiality, so everyone's pleasure counts equally."],
+["Someone donates to charity only for the tax write off, and the donation does a lot of good. What would Kant say?", "It was not really a morally good action, because it was not done for the right reason", "It was good, because it produced good consequences", "It was wrong, because it used the charity merely as a means", "It was good, because it could be a universal law", "Kant cares about acting from duty. The consequentialist is the one who calls it good because of the results."],
+["Why does Kant think acting on a maxim you could not universalize is unreasonable?", "You would be contradicting yourself, saying it is good for you to do but bad if everyone did it", "Because it would reduce overall happiness", "Because your culture would disapprove", "Because you might get caught", "Kant grounds morality in reason. Making an exception for yourself is a kind of contradiction."],
+["Besides failing to universalize, what is wrong with the Brightspace lie according to the Formula of Humanity?", "It deceives the professor and manipulates their decision", "It lowers the class average", "It causes the professor pain", "It breaks Bentley policy", "Deception bypasses the professor's rational agency, which uses them merely as a means."],
+["You pretend to be someone's friend only because they have access to internships. Kant would say this…", "Violates the Formula of Humanity, because you use them merely as a means", "Is fine, because both of you benefit", "Is fine, because it could be universalized", "Violates only a hypothetical imperative", "The pretending is deception. They cannot really agree to what you are doing."],
+["What does Kant mean by 'humanity' in the Formula of Humanity?", "The capacities of rational agency, like forming purposes and making choices", "The human species as a whole", "Kindness toward others", "The greatest happiness of all people", "Treating humanity as an end means respecting each person as someone whose choices and purposes matter."],
+["How did Kant see the Formula of Universal Law and the Formula of Humanity?", "As two formulations of one moral law", "As two rival theories", "As a hypothetical and a categorical imperative", "As a consequentialist and a deontological test", "They usually agree. Sweatshops are a case where they may come apart."],
+["In the comparison from class, which is a cost of Kantian ethics?", "It may prohibit an action even when the action prevents serious harm", "It permits using people to achieve good outcomes", "Its calculations can be difficult", "It counts everyone's pleasure equally", "Permitting the use of people and hard calculations were listed for utilitarianism."],
+["In the Caledonia case the ship agreed to the tug's price and really was rescued. What made it exploitation anyway?", "The price was far more than was fair, taken because the ship had no alternative", "The tug did not actually help", "The ship never agreed", "Rescues should always be free", "Consent and benefit do not settle fairness. The unfair terms are what make it exploitation."],
+["Which premise of the exploitation argument does the non worseness argument challenge?", "That any arrangement involving exploitation is morally impermissible", "That sweatshop workers are poor", "That sweatshops pay low wages", "That workers accept the jobs", "Non worseness grants sweatshops may be exploitative and says they are permissible anyway."],
+["Should consumers buy sweatshop made clothing? Which question reflects the deontological approach?", "Does buying make consumers complicit in exploitation?", "Will a boycott improve conditions or eliminate jobs?", "Which response best improves workers' lives?", "Will purchasing sustain valuable jobs?", "The other three are about outcomes, which is the consequentialist focus."],
+["Which of these is NOT something respect for workers' autonomy requires, according to class?", "The highest possible wages", "Informed consent", "A real ability to leave", "Basic safety", "The list was informed consent, no deception or threats, a real ability to leave, control over working hours, basic safety, and a voice."]
+];
+const $=id=>document.getElementById(id), L=["A","B","C","D"], T=45;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function show(id){["start","lobby","game","end"].forEach(s=>$(s).hidden=s!==id)}
+
+/* ---------- shared question rendering ---------- */
+let mode="solo",item=null,timer=null,left=T,locked=false;
+function draw(it){
+  item=it;locked=false;left=T;
+  $("q").textContent=it[0];$("after").hidden=true;
+  const box=$("answers");box.textContent="";
+  shuffle(it.slice(1,5)).forEach((t,k)=>{const b=document.createElement("button");b.className="ans";b.id="ans"+k;
+    const l=document.createElement("b");l.textContent=L[k];const s=document.createElement("span");s.textContent=t;
+    b.append(l,s);b.onclick=()=>pick(b,t);box.append(b)});
+  $("time").style.width="100%";clearInterval(timer);
+  timer=setInterval(()=>{left-=0.1;$("time").style.width=Math.max(0,left/T*100)+"%";if(left<=0)pick(null,null)},100);
+}
+function lockAnswers(showRight){document.querySelectorAll(".ans").forEach(b=>{b.disabled=true;if(showRight&&b.lastChild.textContent===item[1])b.classList.add("right")})}
+function pick(btn,text){
+  if(locked)return;locked=true;clearInterval(timer);
+  if(btn)btn.classList.add("picked");
+  mode==="solo"?soloPick(text):multiPick(text);
+}
+
+/* ---------- solo ---------- */
+let deck=[],i=0,score=0,streak=0,right=0,missed=[],picks=[];
+function begin(set){mode="solo";deck=shuffle(set);i=0;score=0;streak=0;right=0;missed=[];picks=[];show("game");ask()}
+function ask(){
+  $("count").textContent="Question "+(i+1)+" of "+deck.length;
+  $("score").textContent=score+" pts";$("mid").textContent=streak>1?"Streak "+streak:"";
+  draw(deck[i]);
+}
+function soloPick(text){
+  const ok=text===item[1],fb=$("fb");lockAnswers(true);
+  if(ok){streak++;right++;const pts=500+Math.round(500*Math.max(0,left)/T)+Math.min(streak-1,5)*100;score+=pts;fb.className="ok";fb.textContent="Correct. +"+pts+" points";}
+  else{streak=0;missed.push(item);picks.push({q:item[0],picked:text===null?"no answer":text});fb.className="no";fb.textContent=(text===null?"Out of time. The answer: ":"Not quite. The answer: ")+item[1];}
+  $("why").textContent=item[5];$("score").textContent=score+" pts";
+  $("board").hidden=true;$("waitHost").hidden=true;$("next").hidden=false;
+  $("next").textContent=i+1<deck.length?"Next question":"See results";
+  $("after").hidden=false;$("next").focus();
+}
+function finish(){
+  if(db)db.collection("solo").add({at:new Date().toISOString(),name:myName()||"solo",score,right,total:deck.length,wrong:picks}).catch(()=>{});
+  show("end");$("soloEnd").hidden=false;$("multiEnd").hidden=true;$("final").textContent=score+" pts";
+  const pct=Math.round(right/deck.length*100);
+  $("summary").textContent="You got "+right+" of "+deck.length+" right ("+pct+"%). "+(pct>=90?"You are ready for Monday.":pct>=70?"Solid. Clean up the ones below.":"Go back over the ones below, then run it again.");
+  const ul=$("missed");ul.textContent="";$("missedWrap").hidden=!missed.length;$("redo").hidden=!missed.length;
+  missed.forEach(m=>{const li=document.createElement("li"),q=document.createElement("div"),a=document.createElement("div");
+    q.textContent=m[0];a.textContent=m[1]+". "+m[5];a.className="muted";li.append(q,a);ul.append(li)});
+}
+$("go").onclick=()=>begin(BANK);$("again").onclick=()=>begin(BANK);
+$("redo").onclick=()=>begin(missed.slice());$("home").onclick=()=>show("start");
+
+/* ---------- multiplayer: everything travels in presence, nothing is stored ---------- */
+let db=null,log={},room=null,joined=false,hosting=null,hostDeck=[],gid=0,me={score:0,right:0,done:0,ok:false,pick:""},seen="",shownRound=0,revealTimer=null;
+const myName=()=>$("name").value.trim().slice(0,20);
+const peersNow=()=>room?room.peers():[];
+const mine=p=>p.isMe&&p.sameTab;
+function hostPeer(){return peersNow().filter(p=>p.presence&&p.presence.g&&typeof p.presence.g.id==="number").sort((a,b)=>a.presence.g.id-b.presence.g.id)[0]||null}
+function roster(id){return peersNow().filter(p=>p.presence&&typeof p.presence.name==="string"&&p.presence.name&&p.presence.gid===id)}
+function send(patch){if(room)room.presence(patch).catch(()=>{})}
+function setG(patch){hosting={...hosting,...patch};send({g:hosting})}
+function doReveal(){
+  if(!hosting||hosting.s!=="q")return;
+  const g=hosting,q=BANK[g.qi][0];
+  roster(g.id).forEach(p=>{const pr=p.presence,r=log[p.peer]||(log[p.peer]={name:"",score:0,right:0,wrong:[]});
+    r.name=String(pr.name).slice(0,20);r.score=+pr.score||0;r.right=+pr.right||0;
+    const got=pr.done===g.n;
+    if(!(got&&pr.ok===true))r.wrong.push({q,picked:got?String(pr.pick||"").slice(0,160):"no answer"})});
+  if(db)db.doc("games/g"+g.id).set({at:new Date(g.id).toISOString(),total:g.total,asked:g.n,players:log}).catch(()=>{});
+  setG({s:"reveal"});
+}
+function newGame(){
+  const n=Math.min(BANK.length,parseInt($("len").value,10)||30);
+  hostDeck=shuffle(BANK.map((_,k)=>k)).slice(0,n);
+  hosting={id:Date.now(),s:"lobby",n:0,qi:0,total:n};log={};
+}
+function leave(note){
+  joined=false;hosting=null;gid=0;seen="";clearInterval(timer);clearTimeout(revealTimer);mode="solo";
+  send({name:null,gid:null,score:null,right:null,done:null,ok:null,pick:null,g:null});
+  show("start");sync();if(note)$("mpStatus").textContent=note;
+}
+function paintBoard(el,g,lobby){
+  el.textContent="";
+  roster(g.id).slice().sort((a,b)=>(+b.presence.score||0)-(+a.presence.score||0)).forEach(p=>{
+    const li=document.createElement("li"),d=document.createElement("div"),n=document.createElement("span"),s=document.createElement("span");
+    n.textContent=String(p.presence.name).slice(0,20)+(mine(p)?" (you)":"")+(p.presence.g?" · host":"");
+    s.textContent=lobby?"":(+p.presence.score||0)+" pts";
+    if(mine(p))li.className="you";d.append(n,s);li.append(d);el.append(li)});
+}
+function sync(){
+  if(!room)return;
+  const hp=hostPeer();
+  $("join").hidden=!hp||joined;$("hostRow").hidden=!!hp;
+  $("mpStatus").textContent=hp?"A game is open"+(hp.presence.name?", hosted by "+String(hp.presence.name).slice(0,20):"")+". Type a name and join.":"No game is open yet. Host one, then have your friends open this page.";
+  if(!joined)return;
+  if(!hp){leave("The host left, so that game ended.");return}
+  if(hosting&&!mine(hp)){hosting=null;clearTimeout(revealTimer);send({g:null})}
+  const g=hp.presence.g;
+  if(g.id!==gid){gid=g.id;me={score:0,right:0,done:0,ok:false,pick:""};send({gid,...me})}
+  const key=g.id+":"+g.n+":"+g.s;
+  if(key!==seen){seen=key;transition(g)}
+  live(g);
+}
+function transition(g){
+  clearInterval(timer);mode="multi";
+  if(g.s==="lobby")show("lobby");
+  else if(g.s==="q"||g.s==="reveal"){
+    if(!BANK[g.qi])return;
+    show("game");
+    if(g.s==="q"||shownRound!==g.n){shownRound=g.n;draw(BANK[g.qi]);$("count").textContent="Question "+g.n+" of "+g.total}
+    if(g.s==="q"){
+      if(hosting){clearTimeout(revealTimer);const n=g.n;revealTimer=setTimeout(()=>{if(hosting&&hosting.n===n)doReveal()},(T+1.5)*1000)}
+    }else reveal(g);
+  }else if(g.s==="done"){show("end");$("soloEnd").hidden=true;$("multiEnd").hidden=false}
+}
+function live(g){
+  const r=roster(g.id);
+  $("score").textContent=me.score+" pts";
+  if(g.s==="lobby"){
+    paintBoard($("lobbyList"),g,true);
+    $("startGame").hidden=!hosting;
+    $("lobbyNote").textContent=r.length+(r.length===1?" player":" players")+" in. "+(hosting?"Start when everyone has joined.":"Waiting for the host to start.");
+  }else if(g.s==="q"){
+    const done=r.filter(p=>p.presence.done===g.n).length;
+    $("mid").textContent=done+" of "+r.length+" answered";
+    if(hosting&&hosting.s==="q"&&r.length&&done===r.length){clearTimeout(revealTimer);doReveal()}
+  }else if(g.s==="reveal"){$("mid").textContent="";paintBoard($("board"),g)}
+  else if(g.s==="done"){paintBoard($("finalBoard"),g);$("rehost").hidden=!hosting;$("resWrap").hidden=!hosting;if(hosting)$("res").value=resultsText()}
+}
+function multiPick(text){
+  const ok=text===item[1];me.done=shownRound;me.ok=ok;me.pick=text===null?"no answer":String(text).slice(0,160);
+  if(ok){me.right++;me.score+=500+Math.round(500*Math.max(0,left)/T)}
+  send({...me});lockAnswers(false);
+  const fb=$("fb");fb.className="";fb.textContent=text===null?"Out of time.":"Answer locked in. Waiting for the others.";
+  $("why").textContent="";$("board").hidden=true;$("waitHost").hidden=true;$("next").hidden=true;$("after").hidden=false;
+}
+function reveal(g){
+  locked=true;clearInterval(timer);lockAnswers(true);
+  const fb=$("fb"),got=me.done===g.n;
+  if(got&&me.ok){fb.className="ok";fb.textContent="Correct."}
+  else{fb.className="no";fb.textContent=(got?"Not quite. The answer: ":"No answer. The answer: ")+item[1]}
+  $("why").textContent=item[5];$("board").hidden=false;
+  $("next").hidden=!hosting;$("waitHost").hidden=!!hosting;
+  $("next").textContent=g.n<g.total?"Next question":"Show final standings";
+  $("after").hidden=false;
+}
+$("next").onclick=()=>{
+  if(mode==="solo"){i++;i<deck.length?ask():finish();return}
+  if(!hosting)return;
+  hosting.n<hosting.total?setG({s:"q",n:hosting.n+1,qi:hostDeck[hosting.n]}):setG({s:"done"});
+};
+$("host").onclick=()=>{
+  if(!myName()){$("name").focus();$("mpStatus").textContent="Type a name first.";return}
+  newGame();joined=true;gid=hosting.id;me={score:0,right:0,done:0,ok:false,pick:""};
+  send({name:myName(),gid,...me,g:hosting});
+};
+$("join").onclick=()=>{
+  if(!myName()){$("name").focus();$("mpStatus").textContent="Type a name first.";return}
+  joined=true;gid=0;send({name:myName()});sync();
+};
+$("startGame").onclick=()=>{if(hosting)setG({s:"q",n:1,qi:hostDeck[0]})};
+$("rehost").onclick=()=>{if(hosting){newGame();send({g:hosting})}};
+$("copyRes").onclick=()=>{const t=$("res");navigator.clipboard.writeText(t.value).then(()=>{$("copyRes").textContent="Copied"},()=>{t.focus();t.select()})};
+$("leave1").onclick=()=>leave();$("leave2").onclick=()=>leave();
+
+try{["qr1","qr2"].forEach(id=>new QRCode($(id),{text:location.origin+"/",width:132,height:132,correctLevel:QRCode.CorrectLevel.M}))}catch(e){document.querySelectorAll(".qr").forEach(e=>e.hidden=true)}
+(async()=>{
+  try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){}
+})();
+function makeRoom(){
+  if(!("WebSocket" in window)||!/^https?:$/.test(location.protocol))return null;
+  let cid="";try{cid=sessionStorage.getItem("cid")||""}catch(e){}
+  if(!cid){cid=Math.random().toString(36).slice(2,12)+Math.random().toString(36).slice(2,8);try{sessionStorage.setItem("cid",cid)}catch(e){}}
+  let ws=null,myId=null,list=[],fns=[],own={};
+  function connect(){
+    ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws?cid="+cid);
+    ws.onopen=()=>{if(Object.keys(own).length)ws.send(JSON.stringify({t:"p",patch:own}))};
+    ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(x){return}
+      if(m.t==="hello")myId=m.id;
+      if(m.t==="peers"&&Array.isArray(m.peers)){
+        const meP=m.peers.find(p=>p.peer===myId);
+        if(Object.keys(own).length&&!meP)return;
+        list=m.peers.map(p=>({peer:p.peer,presence:p.presence||{},isMe:p.peer===myId,sameTab:p.peer===myId}));
+        fns.forEach(f=>f())}};
+    ws.onclose=()=>setTimeout(connect,1500);
+  }
+  connect();
+  return{peers:()=>list,onPeers:f=>{fns.push(f)},presence:patch=>{
+    for(const k in patch){if(patch[k]===null)delete own[k];else own[k]=patch[k]}
+    if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"p",patch}));return Promise.resolve()}};
+}
+function resultsText(){
+  const out=["PH102 quiz results"];
+  Object.values(log).forEach(r=>{out.push("",r.name+": "+r.score+" pts, "+r.right+" right, "+r.wrong.length+" wrong");
+    r.wrong.forEach(w=>out.push("  Missed: "+w.q+" (picked: "+w.picked+")"))});
+  return out.join("\n");
+}
+(async()=>{
+  let r=null;try{r=makeRoom()}catch(e){}
+  if(!r){$("mpStatus").textContent="Playing with friends is not available right now. Solo still works.";return}
+  room=r;$("mpControls").hidden=false;
+  room.onPeers(sync,()=>{room=null;$("mpControls").hidden=true;$("mpStatus").textContent="Playing with friends is not available right now. Solo still works.";if(joined){joined=false;show("start")}});
+  sync();
+})();
+</script>
+
+</body>
+</html>
